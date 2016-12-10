@@ -37,11 +37,11 @@ mystats = function(x,na.omit=F) {
 }
 
 sapply(mtcars[vars],mystats)
-rm(list=ls())
+
 # Extensions
 library(Hmisc)
 describe(mtcars[vars])
-
+vars
 library(pastecs)
 stat.desc(mtcars[vars])
 
@@ -67,4 +67,118 @@ str(mtcars)
 library(doBy)
 summaryBy(mpg+hp+wt~am,data=mtcars,FUN=mystats)
 summaryBy(mpg~am,data=mtcars,FUN=mystats)
+#summaryBy(mpg+wt~am+hp,data=mtcars,FUN=mystats)
+
 unique(mtcars$mpg)
+
+library(psych)
+psych::describeBy(mtcars[vars],mtcars$am)
+# cannot use arbitrary function
+
+
+# reshape : melt and cast -----------------------------------------------------------
+
+dfm = reshape::melt(mtcars,measure.vars=c('mpg','hp','wt'),id.vars=c('am','cyl'))
+dfm
+?melt
+
+reshape::cast(mtcars, am + cyl  ~ ., mean)
+reshape::cast(mtcars, am + cyl  ~ ., dstats)
+
+# Distributions  of Quantitative Variables -----------------------------------------------------
+
+# 7.2 Frequency and Contigency Tables ---------------------
+library(vcd)
+head(Arthritis)
+str(Arthritis)
+# Categorical Attributes - Treatment, Sex, Age
+#  Commands - table, xtabs, prop.table, margin.table, addmargines, ftable
+# 1 way tables
+mytable = with(Arthritis, table(Improved))
+mytable
+table(Arthritis$Improved)
+prop.table(mytable) # relative %
+round(prop.table(mytable) * 100)
+
+# 2 way table
+str(Arthritis)
+table(Arthritis$Treatment, Arthritis$Sex)
+mytable = xtabs(~ Treatment + Improved,data=Arthritis)
+xtabs
+table(Arthritis$Treatment,Arthritis$Improved)
+table(Arthritis$Improved, Arthritis$Treatment) # Rights side - Coln
+margin.table(mytable,1) # Row Sum 1- 1st variable in the table
+prop.table(mytable,1)  # Row Proportions
+margin.table(mytable,2) # Col Sum 2- 2nd variable in the table
+prop.table(mytable,2)  # ColProportions
+round(prop.table(mytable)*100)  # Cell Proportions
+addmargins(mytable) # add row and column rums
+addmargins(prop.table(mytable,1),2) # add coln margins only
+addmargins(prop.table(mytable,1),1) # add row margins only
+
+library(gmodels)
+gmodels::CrossTable(Arthritis$Treatment, Arthritis$Improved)
+
+# Multidimensional Tables
+#functions extend themselves - table, xtabs, margin.table, prop.table, addmargines, ftable(addl)
+mytable2 = xtabs(~Treatment + Sex + Improved, data = Arthritis) # 3 way contingency table
+mytable2
+
+ftable(mytable2)
+
+# Marginal Frequencies
+margin.table(mytable2,1)
+margin.table(mytable2,2) # 2nd factor
+margin.table(mytable2,3)
+
+margin.table(mytable2, c(1,3)) # 1st & 3rd Factor
+margin.table(mytable2, c(1,2))
+
+ftable(addmargins(prop.table(mytable2,c(1,2)),3))
+ftable(round(addmargins(prop.table(mytable2,c(1,2)),3)*100))
+
+
+# Tests of Independence -----------------------
+# Chi Square, Fisher, Mantel 
+# Chi Square Tests of Independence chisq.test() Ho- Independent -----------------
+library(vcd)
+mytable3 = xtabs(~Treatment+Improved, data =Arthritis)
+chisq.test(mytable3) # p < .05 -> Ho reject : Not Independent
+# 2X 2 table
+mytable3 = xtabs(~Treatment+Sex, data =Arthritis)
+chisq.test(mytable3) # p > .05 -> Ho accept: Independent
+
+mytable3 = xtabs(~Improved+Sex, data =Arthritis)
+chisq.test(mytable3) # p > .05 -> Ho accept: Independent
+# Warning - some values may be less than 5
+
+
+# Fisher Test fisher.test() Ho - Independent ---------------
+mytable3 = xtabs(~Treatment+Improved, data =Arthritis)
+fisher.test(mytable3) # p < .05 -> Ho Reject : Not Independent - Dependent
+# any x * y table more than 2 x 2 table
+
+# Mantel Tests 2 conditionally independent of 3rd variable-----------------
+mytable3 = xtabs(~Treatment+Improved+Sex, data =Arthritis)
+mantelhaen.test(mytable3) # Reject Ho : Not Indepedent
+# Treatment & improved variable are idenpendent of each sex level
+# Treated indls improved more than those receiving Placeo for sex
+
+# Measures of Association -------------------
+# if Ho is rejected ie. There is Dependency. Then find association
+mytable4 = xtabs(~Treatment+Improved, data =Arthritis)
+library(vcd)
+vcd::assocstats(mytable4) # larger magnitude ? stronger association
+
+# Converting Tables to flat files --------------
+table2flat = function(mytable) {
+  df = as.data.frame(mytable)
+  rows = dim(df)[1]
+  cols = dim(df)[2]
+  x = NULL
+  for (i in 1:rows) {
+    for (j in 1:df$Freq)
+  }
+}
+
+

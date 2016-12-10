@@ -177,8 +177,65 @@ table2flat = function(mytable) {
   cols = dim(df)[2]
   x = NULL
   for (i in 1:rows) {
-    for (j in 1:df$Freq)
+    for (j in 1:df$Freq[i]){
+      row = df[i,c(i:cols-1)]
+      x = rbind(x,row)
+    }
   }
+  row.names(x) = c(1:dim(x)[1])
+  return(x)
 }
+# takes a R table with any no of rows & cols and retuns a Df in flat file
 
+treatment = rep(c('Placebo','Treated'),times=3)
+treatment
+improved = rep(c('None','Some','Marked'),each=2)
+improved
+Freq = c(29,13,7,17,7,21)
+mytable6 = as.data.frame(cbind(treatment,improved,Freq))
+mytable6
+str(mytable6)
+mydata = table2flat(mytable6)  # NOT WORKING
+#mydata
+
+# 7.3 Correlations ------------------
+# Strength 0 to 1; Direction +/-
+# dataset state.x77 - population, income, illiteracy, life expectancy, murder rate, high school graduation
+# packages - pysch, ggm
+# Types - Pearson, Spearman(Rank), Kendall
+help("state.x77") # matrix 50 rows & 8 colns
+#cor(x - DF, use='everything' -missing data , method='person') person, spearman, kendall
+states = state.x77[,1:6]
+str(states)
+dim(states)
+head(states)
+cov(states)   # Covariance
+cor(states)   # Pearson Correlation
+cor(states,method='spearman')   # Spearman  Correlation
+# Strong + betw Income & HS Grad ; Strong - betw Illiteracy & life exp
+
+x = states[,c('Population','Income','Illiteracy', 'HS Grad')]
+y = states[,c('Life Exp', 'Murder')]
+cor(x,y) # Relative relation between 2 sets
+
+# Partial Correlation betn 2 Quantitative variables --------------
+library(ggm)
+ggm::pcor(c(1,5,2,3,6), cov(states))
+# corr betw population & murder rate, others controlled(1,5,2,3,6)
+head(states)
+ggm::pcor(c(1,5,2,4,3,6), cov(states))
+
+# Other type of Correlations -------------
+#polycor::hetcor()  - hetergenous matrox
+
+# Testing Correlations fo Significance Ho: No Relationship -----------
+#cor.test(x,y,alternative='two.sided,..', method='pearson,....')
+cor.test(states[,3],states[,5]) # Life Expectancy & Murder Rate is 0 : Reject, it is not 0
+# only 1 correlation
+
+psych::corr.test(states, use='complete') # Correlation & Sign levels for matrices for all corr tests
+psych::corr.test(states, use='pairwise')
+
+# Other Tests of Significance
+#psych::pcor.test(r,q,n)
 

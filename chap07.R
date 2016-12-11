@@ -239,3 +239,41 @@ psych::corr.test(states, use='pairwise')
 # Other Tests of Significance
 #psych::pcor.test(r,q,n)
 
+# t tests -----------------------------------------------------------------
+# comparing samples - most common
+# dataset in MASS::UScrime
+str(MASS::UScrime)
+# Are you more likely to be imprisoned if you commit a crime in South
+# Compare 2 gp indepdent t test : Hypo that the 2 population means are equal
+# t.tests(y~x,data) ; t.test(y1,y2) ; default unequal variances
+# alternative = 2T, LT, RT ; var.equal=T, paired=T
+library(MASS)
+head(UScrime[,c('Prob','So')])  # So is a factor
+t.test(Prob ~ So,data=UScrime) # two Tailed, Prob of imprisonment
+# creates 2 samples So=0, So=1 out of the data set
+# p<0.05, Reject Ho that they have equal probabilities
+
+# 7.4.2 Dependent Tests --------------------------------
+# Is unemployment rate greater in elder males
+# Ho= Groups are not independent ie Dependent. Pre & Post measures
+# Difference btw groups is normally distributed
+sapply(UScrime[c('U1','U2')], function(x) (c(mean=mean(x),sd=sd(x))))
+with(UScrime, t.test(U1,U2,paired=T))
+# Diff of means is large, p< 0.05; Rejet Ho: Conclude - Independent
+
+#7.5 Non Parametric Tests of Group Differences
+# Comparing 2 groups
+with(UScrime,by(Prob,So,median))
+
+wilcox.test(Prob ~ So, data=UScrime)
+# Reject the Ho that they are same - They are different
+# used when groups are paried & assumptions of normality is not required
+
+sapply(UScrime[c('U1','U2')],median)
+with(UScrime, wilcox.test(U1,U2),paired=T)
+
+# comparing more than 2 groups
+# kruskal.test(y~A,data)
+# friedman.test(y~A|B,data)
+
+# incomplete......

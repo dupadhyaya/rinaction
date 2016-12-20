@@ -61,17 +61,17 @@ write.csv(dfxy,'file1.csv')
 str(mtcars)
 dim(mtcars)
 data1 = mtcars
-
+str(data1)
 # Columns which can be made to factors
 # Factors - carb, am, cyl
 
 #Plot
 plot(data1$wt,data1$mpg)
-abline(lm(mpg~wt),data=data1)
+abline(lm(mtcars$mpg~mtcars$wt),data=mtcars)
 title("Regression of MPG on Weight")
 
 # Histogram
-hist(data1$wt)
+hist(mtcars$wt)
 
 # Convert to Factors
 data1$carb = factor(data1$carb)
@@ -109,7 +109,7 @@ data1[data1$am==0,c('wt','mpg')]
 
 
 
-
+rm(list=ls())
 library(MASS)
 
 # data set faithful (MASS)
@@ -146,7 +146,8 @@ chisq.test(tbl)
 # and estimate the next eruption duration if the waiting time since the 
 # last eruption  has been 100 minutes
 eruption.lm = lm(eruptions ~ waiting, data=faithful)
-coeffs = coefficients(eruption.lm) ; coeff
+coeffs = coefficients(eruption.lm)
+coeffs
 duration = coeffs[1] + coeffs[2]* 100
 duration  # next one to last 5.688
 
@@ -174,9 +175,10 @@ t.test(prem,reg,alternative="greater", paired=TRUE)
 # Time Series
 #https://rdrr.io/rforge/TTR/man/MovingAverages.html
 library(TTR)
+data(ttrc)
 str(ttrc)
-ttrc
-str(ttrc)
+#ttrc
+
 # Simple 20 day Moving Average
 sma.20 = SMA(ttrc[,'Close'],20)
 head(sma.20,n=21)
@@ -203,13 +205,12 @@ head(wma.3)
 # Exponential Weighted Mean
 ema.2 = EMA(x,wilder=T,2)
 head(ema.2)
-?EMA
 
 library(xts)
 temp = ts(x,start = c(2000),end=c(2011),  frequency = 1)
 #temp = ts(x,start = c(2000,1),end=c(2012,3),  frequency = 12)
 
 temp
-?ts
 plot(temp)
 print(temp)
+

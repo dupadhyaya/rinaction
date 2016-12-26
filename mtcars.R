@@ -4,12 +4,13 @@
 
 # Exercise1
 x = c(60,75,58,46,NA,75,55,76,72,64)
-y = c(30,68,65,56,70,69,59,78,70,75)
+y = c(30,68,65,56,71,69,59,78,70,75)
 # Length  and Mean of x
 length(x)
 mean(x,na.rm=T)
 # use edit commands to update first value of y to 50
 y=fix(y)
+y[1] =50 ; y;
 # Median  and Std Dev of y 
 median(y)
 sd(y)
@@ -62,6 +63,7 @@ str(mtcars)
 dim(mtcars)
 data1 = mtcars
 str(data1)
+class(mtcars)
 # Columns which can be made to factors
 # Factors - carb, am, cyl
 

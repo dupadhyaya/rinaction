@@ -257,3 +257,6 @@ Treatment None Some Marked
 Arthrt> mosaic(art, gp = shading_Friendly)
 
 Arthrt> mosaic(art, gp = shading_max)
+
+   Goodbye!
+

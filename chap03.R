@@ -24,9 +24,9 @@ detach(mtcars)
 
 # Saving a Graph -----------
 pdf('mygraph.pdf')
-  plot(mtcars$wt, mtcars$mpg)
-  abline(lm(mtcars$wt, mtcars$mpg))
-  title("Regression of MPG on Weight")
+plot(mtcars$wt, mtcars$mpg)
+abline(lm(mtcars$wt, mtcars$mpg))
+title("Regression of MPG on Weight")
 dev.off()
 # other method saving Plot - Export - Save as Image / Pdf : Copy to Clipboard
 # creating new graph by issuing plot(), hist(), boxplot() will overwrite previous
@@ -217,12 +217,13 @@ legend(location, title, legend, ....)
 # bty - box type ; bg- background color, cex - size, text.col - text color
 # horiz=T  - legend horizontal 
 # 
+# Listing 3.3 Pg 61
 par(opar)
 dose <- c(20, 30, 40, 45, 60)
 drugA <- c(16, 20, 27, 40, 60)
 drugB <- c(15, 18, 25, 31, 40)
 opar <- par(no.readonly=TRUE)
-par(lwd=2, cex=1.5, font.lab=2)
+par(lwd=2, cex=1, font.lab=1)
 plot(dose, drugA, type="b",
      pch=15, lty=1, col="red", ylim=c(0, 60),
      main="Drug A vs. Drug B",
@@ -230,11 +231,160 @@ plot(dose, drugA, type="b",
 lines(dose, drugB, type="b",
       pch=17, lty=2, col="blue")
 abline(h=c(30), lwd=1.5, lty=2, col="gray")
+
 library(Hmisc)
 minor.tick(nx=3, ny=3, tick.ratio=0.5)
-legend("topleft", inset=.05, title="Drug Type", c("A","B"),
+#legend('topright', title='Drug Type', pch=c(15,17),c('A','B'))
+legend("center", inset=.05, title="Drug Type", c("A","B"),
        lty=c(1, 2), pch=c(15, 17), col=c("red", "blue"))
 par(opar)
+
+# 3.4.5 Text Annotations
+text(location, 'text to place', pos, ...) # text within the graph
+mtext('text to place', side, line=n)  # text in the one of the margins
+# pos = 1-below, 2-left, 3-above, 4-right; offset in % of character width
+# can also use locator(1)
+# side = 1-below, 2-left, 3-above, 4-right; 
+# line= line in the margin, 0 onwards outwards
+# adj=0 for left/ bottom alignment; adj=1 for top/right alignment
+#others also avl - cex, col, font
+
+attach(mtcars)
+plot(wt, mpg, 
+     main='Mileage vs Car Weight',
+     xlab='Weight', ylab='Mileage',
+     pch=18, col='blue')
+text(wt, mpg, 
+     row.names(mtcars), cex=0.6, pos=4, col='red')
+detach(mtcars)
+
+# display font families
+opar = par(no.readonly = T)
+par(cex=1.2)
+plot(1:7,1:7, type='n')  # don't plot points
+text(3,3, 'Example of default text')
+text(4,4, family='mono','Example of mono text')
+text(5,5, family='serif','Example of sanserif text')
+par(opar)
+
+# Math Annotations
+help(plotmath)
+demo(plotmath)
+plot(1,1,xlab=expression(x %+-%y), ylab=expression(sqrt(x)))
+
+
+# 3.5 Combining Graphs
+# par and layout
+par(mfrow=c(nrows, ncols))  # matrix of nrows x ncols
+par(mfcol=c(nrows, ncols))  # matrix of nrows x ncols
+
+attach(mtcars)
+opar = par(no.readonly = T)
+par(mfrow=c(2,2))
+plot(wt,mpg, main='Scatterplot of wt vs mpg')
+plot(wt,disp, main='Scatterplot of wt vs disp')
+hist(wt, main=' Histogram of Wt')
+boxplot(wt, main='Box Plot of Wt')
+par(opar)
+detach(mtcars)
+
+# Second example of 3 plots in 3 rows & 1 column
+attach(mtcars)
+opar = par(no.readonly = T)
+par(mfrow=c(3,1), mar=c(1,1,1,1))
+hist(wt)
+hist(disp, main='')  # suppress title
+hist(mpg, ann=F)  # without title
+par(opar)
+detach(mtcars)
+
+
+# Layout function 
+attach(mtcars)
+?layout # complex arrangement of plots
+layout(mat, widths = rep.int(1, ncol(mat)),
+       heights = rep.int(1, nrow(mat)), respect = FALSE)
+layout.show(n = 1)  # no of figures to plot
+layout.show(n = 3)  # no of figures to plot
+hist(wt)
+hist(disp)
+hist(mpg)
+
+layout(matrix(c(1,1,2,3), 2, 2, byrow=T))
+hist(wt)
+hist(disp)
+hist(mpg)
+
+lcm(2)  # absolute width in cm
+hist(wt)
+hist(disp)
+hist(mpg)
+
+
+# 1 fig in row1, 2 figs in row2, Fig1 - 1/3 of height of figures in row2
+# fig in bottom right is 1/4 of width in bottom cell..
+
+attach(mtcars)
+m=matrix(c(1,1,2,3), 2,2)
+m
+layout(m)
+hist(wt)
+hist(disp)
+hist(mpg)
+#--------
+layout(m,widths=c(3,1), heights=c(1,2))
+hist(wt)
+hist(disp)
+hist(mpg)
+
+
+# another example of Layout
+m <- matrix(c(1, 0, 1,  3, 2, 3, 2, 0), nrow = 2, ncol = 4)
+m
+##set up the plot
+layout(m)
+## now put out the 3 plots to each layout "panel"
+plot(1:10, main = "plot1")
+plot(10:1, main = "plot2")
+plot(rnorm(10), main = "plot3")
+layout.show(1)
+layout.show(2)
+layout.show(3)
+layout.show(4)
+
+# 3.5.1  Creating Figure arrangement with fine control
+# 2 box plot added to scatter plot to create single enhance graph
+opar = par(no.readonly = T)
+# full graph area (0,0) to (1,1) ( x1,x2,y1,y2)
+par(fig=c(0,0.8,0,0.8)) # graphical parameter
+
+# scatter plot from to 0.8 on x axis and 0.55 to 1 on y axis
+plot(mtcars$wt, mtcars$mpg, xlab='Miles per Gallon',
+     ylab='Weight in Pounds')
+
+par(fig=c(0,0.8,0.55,1), new=TRUE)  # top
+boxplot(mtcars$wt, horizontal = TRUE, axes=FALSE)
+
+par(fig=c(0.65,1,0,0.8), new=TRUE)  # right
+boxplot(mtcars$mpg, horizontal = FALSE, axes=FALSE)
+mtext(' Enhanced Scatterplot', side=3, outer=T, line=-3)
+par(opar)
+
+
+#?par(fig)
+#A numerical vector of the form c(x1, x2, y1, y2) which gives the
+#(NDC) coordinates of the figure region in the display region
+#of the device. you start a new plot, so to add to an existing plot use new = TRUE as well.
+
+# http://seananderson.ca/courses/11-multipanel/multipanel.pdf
+
+
+plot(wt,mpg, main='Scatterplot of wt vs mpg')
+plot(wt,disp, main='Scatterplot of wt vs disp')
+hist(wt, main=' Histogram of Wt')
+boxplot(wt, main='Box Plot of Wt')
+par(opar)
+detach(mtcars)
 
 
 attach(mtcars)

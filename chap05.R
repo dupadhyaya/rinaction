@@ -180,8 +180,67 @@ paste('Todays date is ', date(), sep=' - ')
 toupper('AbC')
 tolower('AbC')
 
+# ^[hc]?at  # start with h or c. followed by at
+# eg. cat, hat, not bat
+
+
+# 5.2.5  Other Useful Functions
+length(x)
+x = c(2,5,6,9)
+length(x)
+
+seq(from, to, by)
+seq(1,10,2)
+
+rep(x, n) # x - n times
+rep(1:3, 2)
+rep(1:3, 4)
+
+cut(x, n) # divide x into n levels, ordered_result=T
+cut(1:100,5)
+
+pretty(x,n) # pretty breakpoints. continuous var x into n intervals
+# by selecting n+1 equally spaced rounded values. often used in plotting
+pretty(1:100,5)
+
+
+cat(..., file='myfile', append=F)
+firstname = c('Dhiraj')
+cat(' Hello ', firstname, ' Upadhyaya', '\n')
+
 # Regular Expression which is not mathematical
-x
+
+# 5.2.6 Applying functions to matrices and DFs
+a = 5
+sqrt(a)
+b=c(1.243, 5.654, 2.99)
+round(b)
+
+c = matrix(runif(12), nrow=3)
+c
+log(c)  # natural log base e
+log(c, base=exp(1))  # natural log base e
+
+log(c,base=2)  # base 2
+log2(c)
+
+log10(c)  # base 10
+log(c,base=10)  # base 10
+
+mean(c)
+
+# Apply
+
+apply(x, MARGIN, FUN)
+
+mydata = matrix(rnorm(30), nrow=6)
+mydata
+apply(mydata, 1, mean)  # rows
+apply(mydata, 2, mean)  # cols
+apply(mydata, 2, mean, trim=0.2)  # ignore extreme 20% values
+# apply - margins of an array
+# lapply & sapply to list
+
 
 
 # ------ extras

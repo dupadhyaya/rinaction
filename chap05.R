@@ -241,6 +241,203 @@ apply(mydata, 2, mean, trim=0.2)  # ignore extreme 20% values
 # apply - margins of an array
 # lapply & sapply to list
 
+#5.3 Solution for our Data Management Challenge
+# Combine test score into a a single performance indicator 
+# for each student, grade each student from A to F based on 
+# their relative standing (top 20%, next 20%)
+# sort students by students lastname followed by first name
+
+
+options(digits=2)
+Student <- c("John Davis", "Angela Williams", "Bullwinkle Moose",
+               "David Jones", "Janice Markhammer", "Cheryl Cushing",
+               "Reuven Ytzrhak", "Greg Knox", "Joel England",
+               "Mary Rayburn")
+Math <- c(502, 600, 412, 358, 495, 512, 410, 625, 573, 522)
+Science <- c(95, 99, 80, 82, 75, 85, 80, 95, 89, 86)
+English <- c(25, 22, 18, 15, 20, 28, 15, 30, 27, 18)
+roster <- data.frame(Student, Math, Science, English,
+                       stringsAsFactors=FALSE)
+roster
+z <- scale(roster[,2:4])
+z
+score <- apply(z, 1, mean)
+score
+roster <- cbind(roster, score)
+roster
+# ------
+score
+sort(score)
+# Cut off for various grades A-.8, B-.6, C-.4, D-.2
+y = quantile(score,c(.8,.6,.4,.2) )
+y; y[1]; y[2]
+# add another col grade
+roster$grade[score >= y[1]] = 'A'
+roster
+
+roster$grade[score < y[1] & score >= y[2]] <- "B"
+roster$grade[score < y[2] & score >= y[3]] <- "C"
+roster$grade[score < y[3] & score >= y[4]] <- "D"
+roster$grade[score < y[4]] <- "F"
+roster
+# seperate first and last name
+name <- strsplit((roster$Student), " ")
+# Vector of strings returns a list  [ - extract part of the object
+name[1] ; name[[1]] ; sapply(name, "[[", 2)
+sapply(name, "[[", 1); # first item of each list item
+sapply(name, "[[", 2)  # 2nd item of each list item
+sapply(name, "[", 2)
+
+
+name
+# first data from left is firstname, second is lastname
+lastname <- sapply(name, "[", 2)
+firstname <- sapply(name, "[", 1)
+# remove first coln of roster and add first and last name
+roster <- cbind(firstname,lastname, roster[,-1])  # order
+roster <- roster[order(lastname,firstname),]  # sort
+roster
+
+# 5.4 Control Flow
+# statement, cond, expr, seq
+# Repetition and looping
+# for (var in seq) statement
+for (i in 1:10) print(paste(i, 'Hello'))
+
+# while (cond) statement
+i = 10  # Initialise and then reduce by 1
+while (i > 0) {print(paste(i," Hello Friend")); i = i - 1 }
+
+# 5.4.2 Conditional Execution
+# if (cond)  statement ; if (cond) statement1 else statement2
+# grade vector
+roster
+str(grade)
+if (is.character(grade)) grade = as.factor(grade)
+str(grade)
+#line check
+is.factor(grade)
+if (!is.factor(grade)) {
+  grade = as.factor(grade) 
+  } else { 
+  print(' Grade is already is a factor') 
+  }
+
+# ifelse
+score
+ifelse(score > 0.5, print('Passed'), print('Failed'))
+
+# switch(expr, ..)
+# listing 5.7  # not a good example
+feelings = c('sad', 'afraid', 'angry')
+for (i in feelings)
+  print (
+    switch (i,
+           happy = ' I am glad you are happy',
+           afraid = ' There is nothing to fear',
+           sad = ' Cheer up',
+           angry = ' Calm down now'
+  )
+  )
+
+# 5.5  User written functions
+myfunction = function(arg1, arg2, ...) {
+  statements
+  return(object)
+}
+
+mysumfunc <- function(x, y) {
+  mysum = x + y
+}
+
+# long example
+
+mystats <- function(x, parametric=TRUE, print=FALSE) {
+  if (parametric) {
+    center <- mean(x); spread <- sd(x)
+  } else {
+    center <- median(x); spread <- mad(x)
+  }
+  if (print & parametric) {
+    cat("Mean=", center, "\n", "SD=", spread, "\n")
+  } else if (print & !parametric) {
+    cat("Median=", center, "\n", "MAD=", spread, "\n")
+  }
+  result <- list(center=center, spread=spread)
+  return(result)
+}
+
+set.seed(1234)
+x = rnorm(500)
+y = mystats(x)
+y
+
+# Date
+mydate <- function(type="long") {
+  switch(type,
+         long = format(Sys.time(), "%A %B %d %Y"),
+         short = format(Sys.time(), "%m-%d-%y"),
+         cat(type, "is not a recognized type\n")
+  )
+}
+mydate()
+mydate("long")
+mydate("short")
+mydate("shorten")
+
+# 5.6  Aggregating and Restructuring
+# 5.6.1  Transpose  Reverse rows & columns
+
+head(mtcars)
+cars = mtcars[1:5, 1:4]  # 1 to 5 rows, 1:4 columns
+cars
+t(cars)
+
+# 5.6.2 Aggregating Data
+aggregate(x, by, FUN)
+# by - list of variables, FUN- summary stats function
+options(digits=3)
+attach(mtcars)
+head(mtcars)
+# for No of Cyl Type, then Gear Nos - find average of all other values
+aggdata = aggregate(mtcars, by=list(cyl, gear), FUN=mean, na.rm=TRUE)
+head(aggdata)
+str(mtcars)  # 32 observations
+head(mtcars)
+
+# reshape package
+# melt data into any shape.
+id= c(1,1,2,2)
+time = c(1,2,1,2)
+x1 = c(5,3,6,2)
+x2 = c(6,5,1,4)
+mydata = data.frame(id, time, x1, x2)
+mydata
+# each values in X1 & X2 identified by combination of ID & Time
+# name & dob - unique
+
+library(reshape)
+md = melt(mydata, id=(c('id', 'time')))
+md
+mydata
+
+# casting : cast()
+newdata = cast(md, formula, FUN) # md melted data, FUN - optional agg func
+# FUN = rowvar1 + ...
+md
+cast(md, id+time~variable)  # without aggregation
+cast(md, id ~ variable, mean)
+melt(mydata, id=c('id','time'))
+cast(md,id+variable ~ time)
+cast(md, id~variable + time)
+cast(md, id ~ time, mean)
+d
+
+
+
+
+
+
 
 
 # ------ extras

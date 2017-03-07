@@ -431,8 +431,9 @@ melt(mydata, id=c('id','time'))
 cast(md,id+variable ~ time)
 cast(md, id~variable + time)
 cast(md, id ~ time, mean)
-d
 
+
+# Summary =========
 
 
 

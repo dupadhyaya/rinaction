@@ -229,3 +229,103 @@ colfill = c(2:(1+length(levels(cyl.f))))
 legend('topright', levels(cyl.f), fill=colfill)
 rug(mtcars$mpg, col='blue', side=3, lwd=3)
 rug(mtcars$mpg, col='brown', side=1)
+
+
+# 6.5 Box Plot -------------------
+# Distri of cont var by plotting 5 no sum - min, max, Q1,A3, Median,
+# Know outliers, values outside range of 1.5 * IQR- depicted as dots
+boxplot(mtcars$mpg, main='Box Plot', ylab=' Miles per Gallon')
+fivenum(mtcars$mpg)
+lbl5no = c('min', 'IQR', 'Median', '3IQR', 'max')
+abline(h=fivenum(mtcars$mpg))
+text(x=.7,y=fivenum(mtcars$mpg)+.2, labels=paste(lbl5no), col='green')
+text(x=1.5,y=fivenum(mtcars$mpg)+.2, labels=fivenum(mtcars$mpg))
+
+# Example from Net
+
+plot.new()
+data    <- c(0.4, 0.7, 0.75, 0.82, 0.9)
+endaxis <- c(0, 1)  # endpoints of axis
+datamm  <- c(min(data), max(data))
+boxplot(data, horizontal = T, range = 0, ylim = endaxis,
+        axes = F, col = "grey", add = F)
+arrows(endaxis, 1,  datamm, 1,  code = 1, angle = 90, length = 0.1)
+valuelabels <- c(endaxis[1], round(fivenum(data)[2], digits = 2) ,
+                 round(fivenum(data)[4], digits = 2), endaxis[2]  ) 
+text(x = valuelabels, y = c(1.05, 1.25, 1.25, 1.05), labels = valuelabels)
+
+# 6.5.1  Parallel Box Plots to compare groups
+boxplot(formula, data= dataframe)
+# formula y ~ A , y ~ A * B (each combination of A & B)
+# varwidth = T : box plot widths proportional to square root of their sample size
+# horz=T to reverse axis
+head(mtcars[,c('mpg', 'cyl')])
+boxplot( mpg ~ cyl, data= mtcars )
+boxplot( mpg ~ cyl, data= mtcars, main= ' Car Mileage Data'
+         , xlab='No of Cyl', ylab='Miles per Gallon', col=rainbow(3))
+plot.new()
+boxplot( mpg ~ cyl, data= mtcars, main= ' Car Mileage Data',
+         xlab='No of Cyl', ylab='Miles per Gallon', 
+         varwidth=TRUE, 
+         notch= TRUE, # next line
+         col='red')
+
+# Listing 6.9 Box Plot for 2 crossed Factors
+mtcars$cyl.f <- factor(mtcars$cyl,
+                       levels=c(4,6,8),
+                       labels=c("4","6","8")) 
+#Create factor for # of cylinders
+mtcars$am.f <- factor(mtcars$am,
+                      levels=c(0,1),
+                      labels=c("auto", "standard")) 
+#Create factor for transmission type
+boxplot(mpg ~ am.f *cyl.f,
+        data=mtcars,
+        varwidth=TRUE,
+        col=c("gold","darkgreen"),
+        main="MPG Distribution by Auto Type",
+        xlab="Auto Type")
+
+
+# Violin Plots: vioplot package
+library(vioplot)
+vioplot(x1, x2,....,  names=, col=)
+# names - char vector of labels for violon plots
+
+x1 <- mtcars$mpg[mtcars$cyl==4]
+x2 <- mtcars$mpg[mtcars$cyl==6]
+x3 <- mtcars$mpg[mtcars$cyl==8]
+vioplot(x1, x2, x3,
+        names=c("4 cyl", "6 cyl", "8 cyl"),
+        col="gold")
+title("Violin Plots of Miles Per Gallon")
+
+# outer shape represents kernel density plots
+# white dot - median, black box- IQR, Thin black lines- whiskers
+
+
+# 6.6 Dot Plots ---------------
+dotchart(x, labels=)
+
+dotchart(mtcars$mpg, labels=row.names(mtcars), cex=.7,
+         main="Gas Mileage for Car Models" 
+         , pch = 23, gpch = 15, bg = par("bg"), color = 'blue', gcolor = 'green', lcolor = "red"
+         , xlab="Miles Per Gallon")
+?dotchart
+
+
+# Dot Plot
+x <- mtcars[order(mtcars$mpg),]
+x$cyl <- factor(x$cyl)
+x$color[x$cyl==4] <- "red"
+x$color[x$cyl==6] <- "blue"
+x$color[x$cyl==8] <- "darkgreen"
+dotchart(x$mpg,
+         labels = row.names(x),
+         cex=.7,
+         groups = x$cyl,
+         gcolor = "black",
+         color = x$color,
+         pch=19,
+         main = "Gas Mileage for Car Models\ngrouped by cylinder",
+         xlab = "Miles Per Gallon")

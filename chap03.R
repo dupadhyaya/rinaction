@@ -238,6 +238,7 @@ par(opar)
 
 
 attach(mtcars)
+
 layout(matrix(c(1,1,2,3),2,3,byrow=T))
 hist(wt)
 hist(mpg)
@@ -247,3 +248,14 @@ detach(mtcars)
 # Listing 3.4 ----------------
 boxplot(mtcars$wt)
 
+
+
+x <- seq(-2, 2, 0.05)
+y1 <- pnorm(x)
+y2 <- pnorm(x,1,1) 
+plot(x,y1,type="l",col="red") 
+lines(x,y2,col="green")
+
+# Different Axis
+plot( x, y1, type="l", col="red" )
+plot( x, y2, type="l", col="green", add=True )

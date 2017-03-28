@@ -12,19 +12,26 @@ rm(list=ls())
 # Descriptive Statistics --------------------------------------------------
 
 #attach(cars) ;detach(cars)
-vars = c('mpg','hp','wt')
-head(mtcars[vars])
+mtcars
+str(mtcars)
+vars = c('mpg','hp','wt') # vector of variable names
+head(mtcars[vars])  # use these variable names as parameters to filter DF
 str(mtcars)
 dim(mtcars)  # 32 cars
+#  am - auto tx : 0-automatic, 1-manual
+#  cyl - no of cylinders - 4,5,6
 
-# Descriptive Statistics
+# Descriptive Statistics --------------------
 summary(mtcars)
 # use apply or sapply to provide Descriptive Stats
-?sapply
+?sapply # apply function of list or  Vector
+sapply(x, FUN, options)
 sapply(mtcars,fivenum)
-# Other functions - fivenum, sd,var,min,max, median, length, range, quantile (since all colns are numeric)
+# Other functions - fivenum, sd,var,min,max, median, length, 
+# range, fivenum, quantile (since all colns are numeric)
+# fivenum  - min, lowerhinge(Q1), median, upperhinge(Q3), max
 
-# Function for skewness and kurtosis
+# Function for skewness and kurtosis - no predefined function in base
 mystats = function(x,na.omit=F) { 
   if (na.omit)
     x = x[!is.na(x)]
@@ -38,34 +45,63 @@ mystats = function(x,na.omit=F) {
 
 sapply(mtcars[vars],mystats)
 
+# if Missing values 
+sapply(mtcars[vars], mystats, na.omit=T)
+
 # Extensions
+# retuns no of varaibles & obsvns, no of missing & unique values,
+# mean, quantiles, 5 highest & lowest values
 library(Hmisc)
 describe(mtcars[vars])
 vars
 library(pastecs)
 stat.desc(mtcars[vars])
+stat.desc(mtcars[vars], basic=T, desc=T, norm=T, p=.95)  # very good function
+# no of values, null values, missing values, min, max, sum, ; 
+# median, mean, Std Error of mean,  .95 Conf Int, var, Std Dev, CoVar
+# Stats significane, Test of normality, 
 
 library(psych)
 psych::describe(mtcars[vars])
+# nonmissing values, mean, sd, median, trimmed mean, MAD, min, max, range,skew, kurtosis, SE of mean
 
 Hmisc::describe(mtcars[vars]) # want to use Hmisc version of describe
 
 
 # Descriptive Statistics by Group -----------------------------------------
+# used when comparing groups of individuals/obvn instead of total sample
+
 aggregate(mtcars[vars],by=list(mtcars$am),mean)
-aggregate(mtcars[vars],by=list(am=mtcars$am),mean)
+aggregate(mtcars[vars],by=list(am=mtcars$am),mean)  # group by AM 0, 1 -mean of variables
 aggregate(mtcars[vars],by=list(am=mtcars$am),sd)
 # aggregate can use only singe grouping variables like, mean, sd, var
 # list=(name1=groupvar2, name2=groupvar2...)
+aggregate(mtcars[vars],by=list(am=mtcars$am, cyl=mtcars$cyl),mean)
 
+# if more than 1 grouping variables are required use by
 # Group using by --------------------------------------
-dstats = function(x) (c(mean=mean(x),sd=sd(x))) # Not working
-by(mtcars[vars],mtcars$am, dstats)
+dstats = function(x) {
+  (c(mean=mean(x), sd=sd(x))) # Not working
+}
+x = 1:10
+dstats(x)
+
+str(mtcars[vars])
+mtcars$am = factor(mtcars$am)
+by(mtcars[vars],mtcars$am, dstats, simplify = T) # not working
+
+by(mtcars[vars],mtcars$am, summary)
 str(mtcars)
+
+by(warpbreaks[, 1:2], warpbreaks[,"tension"], summary)
+
 
 # Do By
 library(doBy)
-summaryBy(mpg+hp+wt~am,data=mtcars,FUN=mystats)
+?summaryBy
+summaryBy(formula, data = dataframe, FUN=function1)
+summaryBy(mpg+hp+wt~am,data=mtcars,FUN=mystats)  # grouping by AM
+
 summaryBy(mpg~am,data=mtcars,FUN=mystats)
 #summaryBy(mpg+wt~am+hp,data=mtcars,FUN=mystats)
 
@@ -77,8 +113,9 @@ psych::describeBy(mtcars[vars],mtcars$am)
 
 
 # reshape : melt and cast -----------------------------------------------------------
-
-dfm = reshape::melt(mtcars,measure.vars=c('mpg','hp','wt'),id.vars=c('am','cyl'))
+# derive descriptive functions in flexible manner
+dfm = reshape::melt(mtcars, measure.vars= c('mpg','hp','wt'),
+                    id.vars=c('am','cyl'))
 dfm
 ?melt
 

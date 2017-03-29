@@ -15,6 +15,7 @@ rm(list=ls())
 mtcars
 str(mtcars)
 vars = c('mpg','hp','wt') # vector of variable names
+vars
 head(mtcars[vars])  # use these variable names as parameters to filter DF
 str(mtcars)
 dim(mtcars)  # 32 cars
@@ -23,9 +24,11 @@ dim(mtcars)  # 32 cars
 
 # Descriptive Statistics --------------------
 summary(mtcars)
+summary(mtcars[vars])
 # use apply or sapply to provide Descriptive Stats
 ?sapply # apply function of list or  Vector
 sapply(x, FUN, options)
+sapply(mtcars[vars],mean)
 sapply(mtcars,fivenum)
 # Other functions - fivenum, sd,var,min,max, median, length, 
 # range, fivenum, quantile (since all colns are numeric)
@@ -54,6 +57,7 @@ sapply(mtcars[vars], mystats, na.omit=T)
 library(Hmisc)
 describe(mtcars[vars])
 vars
+
 library(pastecs)
 stat.desc(mtcars[vars])
 stat.desc(mtcars[vars], basic=T, desc=T, norm=T, p=.95)  # very good function
@@ -74,6 +78,7 @@ Hmisc::describe(mtcars[vars]) # want to use Hmisc version of describe
 aggregate(mtcars[vars],by=list(mtcars$am),mean)
 aggregate(mtcars[vars],by=list(am=mtcars$am),mean)  # group by AM 0, 1 -mean of variables
 aggregate(mtcars[vars],by=list(am=mtcars$am),sd)
+aggregate(mtcars[vars],by=list(am=mtcars$am,cyl=mtcars$cyl),mean)
 # aggregate can use only singe grouping variables like, mean, sd, var
 # list=(name1=groupvar2, name2=groupvar2...)
 aggregate(mtcars[vars],by=list(am=mtcars$am, cyl=mtcars$cyl),mean)

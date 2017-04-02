@@ -30,3 +30,15 @@ apply(batch2, 1, median)[c(1,2)]
 table(batch)
 table(batch$course, batch$school)
 table(batch$course, batch$school, dnn=c('course','school'))
+
+
+
+library(reshape)
+head(mtcars)
+dstats <- function(x)(c(n=length(x), mean=mean(x), sd=sd(x)))
+dfm <- melt(mtcars, measure.vars=c("mpg", "hp", "wt"),
+              id.vars=c("am", "cyl"))
+head(dfm)
+
+cast(dfm, am + cyl + variable ~ ., dstats)
+cast(dfm, am + cyl + variable ~.)

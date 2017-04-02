@@ -91,10 +91,12 @@ dstats = function(x) {
 x = 1:10
 dstats(x)
 
+library(doBy)
 str(mtcars[vars])
 mtcars$am = factor(mtcars$am)
-by(mtcars[vars],mtcars$am, dstats, simplify = T) # not working
-
+#by(mtcars[vars],mtcars$am, dstats, simplify = T) # not working
+?by
+str(mtcars)
 by(mtcars[vars],mtcars$am, summary)
 str(mtcars)
 
@@ -106,7 +108,7 @@ library(doBy)
 ?summaryBy
 summaryBy(formula, data = dataframe, FUN=function1)
 summaryBy(mpg+hp+wt~am,data=mtcars,FUN=mystats)  # grouping by AM
-
+summaryBy(mpg+hp+wt~am,data=mtcars,FUN=mean)
 summaryBy(mpg~am,data=mtcars,FUN=mystats)
 #summaryBy(mpg+wt~am+hp,data=mtcars,FUN=mystats)
 
@@ -130,30 +132,43 @@ reshape::cast(mtcars, am + cyl  ~ ., dstats)
 # Distributions  of Quantitative Variables -----------------------------------------------------
 
 # 7.2 Frequency and Contigency Tables ---------------------
+
 library(vcd)
 head(Arthritis)
+?Arthritis
 str(Arthritis)
 # Categorical Attributes - Treatment, Sex, Age
 #  Commands - table, xtabs, prop.table, margin.table, addmargines, ftable
 # 1 way tables
 mytable = with(Arthritis, table(Improved))
-mytable
+mytableas;asr
 table(Arthritis$Improved)
 prop.table(mytable) # relative %
-round(prop.table(mytable) * 100)
+round(prop.table(mytable) * 100)  # %
+
+table(mtcars[,1], mtcars[,2])
+xtabs(~mtcars[,1] +mtcars[,2])
+
+# cannot take more than 3 colns
+table(mtcars[,1], mtcars[,2],mtcars[,3])
 
 # 2 way table
 str(Arthritis)
 table(Arthritis$Treatment, Arthritis$Sex)
 mytable = xtabs(~ Treatment + Improved,data=Arthritis)
-xtabs
+mytable
+
 table(Arthritis$Treatment,Arthritis$Improved)
 table(Arthritis$Improved, Arthritis$Treatment) # Rights side - Coln
+
 margin.table(mytable,1) # Row Sum 1- 1st variable in the table
 prop.table(mytable,1)  # Row Proportions
+
 margin.table(mytable,2) # Col Sum 2- 2nd variable in the table
 prop.table(mytable,2)  # ColProportions
 round(prop.table(mytable)*100)  # Cell Proportions
+prop.table(mytable)
+
 addmargins(mytable) # add row and column rums
 addmargins(prop.table(mytable,1),2) # add coln margins only
 addmargins(prop.table(mytable,1),1) # add row margins only

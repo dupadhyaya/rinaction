@@ -74,7 +74,7 @@ with(mtcars, {
   nokeepstats = summary(mpg)
   keepstats <<- summary(mpg)
 } )
-nokeepstats  # no output
+nokeepstats  # no output  # write the function
 keepstats
 
 # case identifiers : identify each row with rowname option
@@ -111,3 +111,4 @@ mylist = list(title=g,ages=h,j,k)
 mylist
 mylist[[2]]
 mylist[['ages']]
+
